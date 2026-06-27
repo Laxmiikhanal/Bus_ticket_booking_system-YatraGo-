@@ -1,10 +1,6 @@
-// import 'package:flower_delivery_app/screens/loginpage_screen.dart';
-// import 'package:flower_delivery_app/screens/registerpage_screen.dart';
-import 'package:flower_delivery_app/screens/Discoverflower_screen.dart';
-// import 'package:flower_delivery_app/screens/fastflowerdelivery_screeen.dart';
-// import 'package:flower_delivery_app/screens/homepage_screen.dart';
-// import 'package:flower_delivery_app/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:bus_ticket_booking_system/core/theme/app_theme.dart';
+import 'package:bus_ticket_booking_system/features/welcome/presentation/pages/welcome_screen.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -12,7 +8,10 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home:DiscoverFlowersPage()
-     );
+      title: 'YatraGo',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      home: const WelcomeScreen(),
+    );
   }
 }

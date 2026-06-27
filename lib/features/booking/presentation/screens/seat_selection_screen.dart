@@ -379,7 +379,7 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
             const Spacer(),
             // Proceed button
             SizedBox(
-              height: 50,
+              height: 52,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _selectedSeats.isEmpty
