@@ -47,7 +47,7 @@ class TicketConfirmedScreen extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              Text('Booking Confirmed!', style: AppTextStyles.h1),
+              const Text('Booking Confirmed!', style: AppTextStyles.h1),
               const SizedBox(height: 8),
               Text('Your ticket has been booked successfully',
                   style: AppTextStyles.bodySmall.copyWith(fontSize: 13),
@@ -98,13 +98,13 @@ class TicketConfirmedScreen extends StatelessWidget {
                       children: [
                         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                           Text(from, style: AppTextStyles.h3),
-                          Text('Departure', style: AppTextStyles.bodySmall),
+                          const Text('Departure', style: AppTextStyles.bodySmall),
                         ]),
                         const Icon(Icons.arrow_forward_rounded,
                             color: AppColors.primary),
                         Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
                           Text(to, style: AppTextStyles.h3),
-                          Text('Destination', style: AppTextStyles.bodySmall),
+                          const Text('Destination', style: AppTextStyles.bodySmall),
                         ]),
                       ],
                     ),
@@ -136,7 +136,7 @@ class TicketConfirmedScreen extends StatelessWidget {
                   ),
                   onPressed: () => Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (_) => HomeScreen()),
+                    MaterialPageRoute(builder: (_) => const HomeScreen()),
                     (_) => false,
                   ),
                   child: Text('Back to Home',
