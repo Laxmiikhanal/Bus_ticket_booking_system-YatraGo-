@@ -7,6 +7,7 @@
 **/*sync/
 .sconsign.dblite
 .tags*
+
 **/.vagrant/
 **/DerivedData/
 Icon?
@@ -32,3 +33,45 @@ Runner/GeneratedPluginRegistrant.*
 !default.mode2v3
 !default.pbxuser
 !default.perspectivev3
+
+# -------------------------------------------------------
+# Additional project ignore rules
+# -------------------------------------------------------
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Backup files
+*.old
+
+# IDE settings
+.idea/
+
+# VS Code workspace files
+.vscode/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Flutter build folders
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Dart package
+.dart_tool/
+
+# Coverage
+coverage/
+
+# Generated documentation
+doc/api/
