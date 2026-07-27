@@ -1,0 +1,5 @@
+[33m9c41c4d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32msprint-2[m[33m, [m[1;31morigin/sprint-1[m[33m, [m[1;32msprint-1[m[33m)[m docs: update README for YatraGo project
+[33m78c1ae6[m feat: add remaining sprint-1 implementation
+[33m1094c6b[m feat: add authentication and welcome screens
+[33m3cd5587[m feat: add app constants and route definitions
+[33ma61b29a[m feat: configure Material3 app theme
