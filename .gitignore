@@ -43,3 +43,12 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# -------------------------------
+# Project maintenance - July 2026
+# -------------------------------
+
+# Local development files
+*.tmp
+*.bak
+*.cache
