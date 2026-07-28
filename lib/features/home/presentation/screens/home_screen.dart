@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:bus_ticket_booking_system/core/theme/app_colors.dart';
 import 'package:bus_ticket_booking_system/core/theme/app_text_styles.dart';
 import 'package:bus_ticket_booking_system/features/bus_list/presentation/screens/bus_list_screen.dart';
+import 'package:bus_ticket_booking_system/features/ticket/presentation/screens/my_tickets_screen.dart';
+import 'package:bus_ticket_booking_system/features/profile/presentation/screens/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -261,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 itemCount: _popularRoutes.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final route = _popularRoutes[index];
                   return _routeCard(route);
@@ -288,7 +290,18 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
-          onTap: (i) => setState(() => _currentIndex = i),
+          onTap: (i) async {
+            if (i == 0 || i == 1) {
+              setState(() => _currentIndex = i);
+              return;
+            }
+            if (i == 2) {
+              await Navigator.push(context, MaterialPageRoute(builder: (_) => const MyTicketsScreen()));
+            } else if (i == 3) {
+              await Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
+            }
+            if (mounted) setState(() => _currentIndex = 0);
+          },
           type: BottomNavigationBarType.fixed,
           backgroundColor: AppColors.white,
           selectedItemColor: AppColors.primary,

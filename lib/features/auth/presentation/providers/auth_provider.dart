@@ -21,8 +21,11 @@ class AuthNotifier extends StateNotifier<AsyncValue<AuthEntity?>> {
     }
   }
 
-  /// Register, then immediately log in to get a token.
-  Future<void> register({
+  /// Registers a new account. Does NOT log the user in — the account is
+  /// created, then the caller (RegisterPage) sends them to the Login screen
+  /// so they sign in explicitly. Returns true on success, false on failure
+  /// (check `state` for the error).
+  Future<bool> register({
     required String firstName,
     required String lastName,
     required String email,
@@ -36,16 +39,28 @@ class AuthNotifier extends StateNotifier<AsyncValue<AuthEntity?>> {
         email: email,
         password: password,
       );
-      final user = await _ds.login(email: email, password: password);
-      state = AsyncValue.data(user);
+      // Still logged out — registration succeeded but no session exists yet.
+      state = const AsyncValue.data(null);
+      return true;
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
+      return false;
     }
   }
 
   Future<void> logout() async {
     await _ds.logout();
     state = const AsyncValue.data(null);
+  }
+
+  /// Attempts to resume a session saved from a previous app launch.
+  /// Returns the restored user, or null if there was nothing to restore.
+  Future<AuthEntity?> restore() async {
+    final user = await _ds.restoreSession();
+    if (user != null) {
+      state = AsyncValue.data(user);
+    }
+    return user;
   }
 }
 

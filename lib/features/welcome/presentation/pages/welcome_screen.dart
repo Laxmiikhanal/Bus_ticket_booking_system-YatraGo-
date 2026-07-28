@@ -1,11 +1,34 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bus_ticket_booking_system/core/theme/app_colors.dart';
 import 'package:bus_ticket_booking_system/core/theme/app_text_styles.dart';
 import 'package:bus_ticket_booking_system/features/auth/presentation/pages/login_page.dart';
 import 'package:bus_ticket_booking_system/features/auth/presentation/pages/register_page.dart';
+import 'package:bus_ticket_booking_system/features/auth/presentation/providers/auth_provider.dart';
+import 'package:bus_ticket_booking_system/features/home/presentation/screens/home_screen.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends ConsumerStatefulWidget {
   const WelcomeScreen({super.key});
+
+  @override
+  ConsumerState<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // If a token/user was saved from a previous launch, skip straight to Home.
+    Future.microtask(() async {
+      final user = await ref.read(authProvider.notifier).restore();
+      if (user != null && mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

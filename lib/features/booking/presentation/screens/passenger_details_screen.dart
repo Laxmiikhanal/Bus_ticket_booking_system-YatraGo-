@@ -4,6 +4,7 @@ import 'package:bus_ticket_booking_system/core/theme/app_text_styles.dart';
 import 'package:bus_ticket_booking_system/features/payment/presentation/screens/payment_screen.dart';
 
 class PassengerDetailsScreen extends StatefulWidget {
+  final String busId;
   final String busName;
   final String from;
   final String to;
@@ -14,6 +15,7 @@ class PassengerDetailsScreen extends StatefulWidget {
 
   const PassengerDetailsScreen({
     super.key,
+    required this.busId,
     required this.busName,
     required this.from,
     required this.to,
@@ -65,12 +67,16 @@ class _PassengerDetailsScreenState extends State<PassengerDetailsScreen> {
         context,
         MaterialPageRoute(
           builder: (_) => PaymentScreen(
+            busId: widget.busId,
             busName: widget.busName,
             from: widget.from,
             to: widget.to,
             departure: widget.departure,
             selectedSeats: widget.selectedSeats,
             totalPrice: widget.totalPrice,
+            passengerName: _nameController.text.trim(),
+            passengerPhone: _phoneController.text.trim(),
+            passengerEmail: _emailController.text.trim(),
           ),
         ),
       );

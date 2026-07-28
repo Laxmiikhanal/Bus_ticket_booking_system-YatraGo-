@@ -1,31 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bus_ticket_booking_system/core/theme/app_colors.dart';
 import 'package:bus_ticket_booking_system/core/theme/app_text_styles.dart';
+import 'package:bus_ticket_booking_system/features/booking/presentation/providers/booking_provider.dart';
 import 'package:bus_ticket_booking_system/features/ticket/presentation/screens/ticket_confirmed_screen.dart';
 
-class PaymentScreen extends StatefulWidget {
+class PaymentScreen extends ConsumerStatefulWidget {
+  final String busId;
   final String busName;
   final String from;
   final String to;
   final String departure;
   final List<String> selectedSeats;
   final int totalPrice;
+  final String passengerName;
+  final String passengerPhone;
+  final String passengerEmail;
 
   const PaymentScreen({
     super.key,
+    required this.busId,
     required this.busName,
     required this.from,
     required this.to,
     required this.departure,
     required this.selectedSeats,
     required this.totalPrice,
+    required this.passengerName,
+    required this.passengerPhone,
+    required this.passengerEmail,
   });
 
   @override
-  State<PaymentScreen> createState() => _PaymentScreenState();
+  ConsumerState<PaymentScreen> createState() => _PaymentScreenState();
 }
 
-class _PaymentScreenState extends State<PaymentScreen> {
+class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   String _selectedMethod = 'esewa';
   bool _isLoading = false;
 
@@ -304,28 +314,60 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  void _handlePayment() {
+  Future<void> _handlePayment() async {
     setState(() => _isLoading = true);
-    Future.delayed(const Duration(seconds: 2), () {
-      if (!mounted) return;
-      setState(() => _isLoading = false);
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (_) => TicketConfirmedScreen(
-            busName: widget.busName,
-            from: widget.from,
-            to: widget.to,
-            departure: widget.departure,
-            selectedSeats: widget.selectedSeats,
-            totalPrice: widget.totalPrice,
-            bookingId:
-                'YG${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}',
+
+    final booking = await ref.read(bookingProvider.notifier).createBooking(
+          busId: widget.busId,
+          busName: widget.busName,
+          from: widget.from,
+          to: widget.to,
+          departure: widget.departure,
+          selectedSeats: widget.selectedSeats,
+          passengerName: widget.passengerName,
+          passengerPhone: widget.passengerPhone,
+          passengerEmail: widget.passengerEmail,
+          totalPrice: widget.totalPrice,
+          paymentMethod: _selectedMethod,
+        );
+
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    if (booking == null) {
+      final error = ref.read(bookingProvider).error;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error?.toString().replaceFirst('Exception: ', '') ??
+                'Payment failed. Please try again.',
           ),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
-        (_) => false,
       );
-    });
+      return;
+    }
+
+    // Refresh "My Bookings" so the new booking shows up immediately.
+    ref.invalidate(myBookingsProvider);
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TicketConfirmedScreen(
+          busName: widget.busName,
+          from: widget.from,
+          to: widget.to,
+          departure: widget.departure,
+          selectedSeats: widget.selectedSeats,
+          totalPrice: widget.totalPrice,
+          bookingId: booking.bookingId,
+        ),
+      ),
+      (_) => false,
+    );
   }
 
   Widget _summaryRow(String label, String value) => Padding(

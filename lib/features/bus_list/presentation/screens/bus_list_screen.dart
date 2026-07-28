@@ -1,37 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bus_ticket_booking_system/core/theme/app_colors.dart';
 import 'package:bus_ticket_booking_system/core/theme/app_text_styles.dart';
 import 'package:bus_ticket_booking_system/features/booking/presentation/screens/seat_selection_screen.dart';
+import 'package:bus_ticket_booking_system/features/bus_list/data/models/bus_model.dart';
+import 'package:bus_ticket_booking_system/features/bus_list/presentation/providers/bus_list_provider.dart';
 
-class BusListScreen extends StatefulWidget {
+class BusListScreen extends ConsumerStatefulWidget {
   final String from;
   final String to;
   const BusListScreen({super.key, required this.from, required this.to});
   @override
-  State<BusListScreen> createState() => _BusListScreenState();
+  ConsumerState<BusListScreen> createState() => _BusListScreenState();
 }
 
-class _BusListScreenState extends State<BusListScreen> {
+class _BusListScreenState extends ConsumerState<BusListScreen> {
   String _selectedFilter = 'All';
   final List<String> _filters = ['All', 'AC', 'Non-AC', 'Night', 'Deluxe'];
-  final List<Map<String, dynamic>> _buses = [
-    {'id':'B001','name':'Greenline Deluxe','type':'AC Deluxe','departure':'07:00 AM','arrival':'02:00 PM','duration':'7 hrs','price':1400,'seats':12,'rating':4.8,'amenities':['AC','WiFi','USB']},
-    {'id':'B002','name':'Sajha Yatayat','type':'Tourist Bus','departure':'08:30 AM','arrival':'03:30 PM','duration':'7 hrs','price':900,'seats':3,'rating':4.2,'amenities':['AC','USB']},
-    {'id':'B003','name':'Buddha Air Express','type':'Night Bus','departure':'10:00 PM','arrival':'05:00 AM','duration':'7 hrs','price':1100,'seats':28,'rating':4.5,'amenities':['AC','Blanket','USB']},
-    {'id':'B004','name':'Himalayan Travels','type':'Non-AC','departure':'06:00 AM','arrival':'01:30 PM','duration':'7.5 hrs','price':650,'seats':18,'rating':3.9,'amenities':['USB']},
-    {'id':'B005','name':'Pokhara Express','type':'AC Deluxe','departure':'12:00 PM','arrival':'07:00 PM','duration':'7 hrs','price':1350,'seats':7,'rating':4.6,'amenities':['AC','WiFi','Snacks']},
-  ];
 
-  List<Map<String, dynamic>> get _filteredBuses {
-    if (_selectedFilter == 'All') return _buses;
-    return _buses.where((b) {
-      final type = (b['type'] as String).toLowerCase();
-      return type.contains(_selectedFilter.toLowerCase());
-    }).toList();
+  List<BusModel> _applyFilter(List<BusModel> buses) {
+    if (_selectedFilter == 'All') return buses;
+    return buses
+        .where((b) => b.type.toLowerCase().contains(_selectedFilter.toLowerCase()))
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    final busesAsync = ref.watch(
+      busListProvider(BusRouteArgs(from: widget.from, to: widget.to)),
+    );
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -60,15 +59,22 @@ class _BusListScreenState extends State<BusListScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('${widget.from} ? ${widget.to}', style: AppTextStyles.h3.copyWith(color: AppColors.white)),
-                            Text('${_filteredBuses.length} buses available', style: AppTextStyles.bodySmall.copyWith(color: AppColors.pale, fontSize: 11)),
+                            Text('${widget.from} → ${widget.to}', style: AppTextStyles.h3.copyWith(color: AppColors.white)),
+                            busesAsync.when(
+                              data: (buses) => Text('${_applyFilter(buses).length} buses available', style: AppTextStyles.bodySmall.copyWith(color: AppColors.pale, fontSize: 11)),
+                              loading: () => Text('Searching…', style: AppTextStyles.bodySmall.copyWith(color: AppColors.pale, fontSize: 11)),
+                              error: (_, _) => Text('Could not load buses', style: AppTextStyles.bodySmall.copyWith(color: AppColors.pale, fontSize: 11)),
+                            ),
                           ],
                         ),
                       ),
-                      Container(
-                        width: 38, height: 38,
-                        decoration: BoxDecoration(color: AppColors.white.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
-                        child: const Icon(Icons.tune_rounded, color: AppColors.white, size: 18),
+                      GestureDetector(
+                        onTap: () => ref.invalidate(busListProvider(BusRouteArgs(from: widget.from, to: widget.to))),
+                        child: Container(
+                          width: 38, height: 38,
+                          decoration: BoxDecoration(color: AppColors.white.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
+                          child: const Icon(Icons.refresh_rounded, color: AppColors.white, size: 18),
+                        ),
                       ),
                     ],
                   ),
@@ -78,7 +84,7 @@ class _BusListScreenState extends State<BusListScreen> {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: _filters.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      separatorBuilder: (_, _) => const SizedBox(width: 8),
                       itemBuilder: (_, i) {
                         final selected = _selectedFilter == _filters[i];
                         return GestureDetector(
@@ -101,14 +107,44 @@ class _BusListScreenState extends State<BusListScreen> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: _filteredBuses.isEmpty
-                  ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.directions_bus_outlined, size: 64, color: AppColors.textLight), const SizedBox(height: 12), Text('No buses found', style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textGrey))]))
-                  : ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: _filteredBuses.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (_, i) => _busCard(_filteredBuses[i]),
+              child: busesAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                error: (err, _) => Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.wifi_off_rounded, size: 48, color: AppColors.textLight),
+                        const SizedBox(height: 12),
+                        Text(
+                          err.toString().replaceFirst('Exception: ', ''),
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textGrey),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+                          onPressed: () => ref.invalidate(busListProvider(BusRouteArgs(from: widget.from, to: widget.to))),
+                          child: const Text('Retry', style: TextStyle(color: AppColors.white)),
+                        ),
+                      ],
                     ),
+                  ),
+                ),
+                data: (buses) {
+                  final filtered = _applyFilter(buses);
+                  if (filtered.isEmpty) {
+                    return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.directions_bus_outlined, size: 64, color: AppColors.textLight), const SizedBox(height: 12), Text('No buses found', style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textGrey))]));
+                  }
+                  return ListView.separated(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: filtered.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
+                    itemBuilder: (_, i) => _busCard(filtered[i]),
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -116,10 +152,10 @@ class _BusListScreenState extends State<BusListScreen> {
     );
   }
 
-  Widget _busCard(Map<String, dynamic> bus) {
-    final isLowSeat = (bus['seats'] as int) <= 5;
+  Widget _busCard(BusModel bus) {
+    final isLowSeat = bus.availableSeats <= 5;
     return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SeatSelectionScreen(busId: bus['id'] as String, busName: bus['name'] as String, from: widget.from, to: widget.to, departure: bus['departure'] as String, price: bus['price'] as int))),
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SeatSelectionScreen(busId: bus.id, busName: bus.name, from: widget.from, to: widget.to, departure: bus.departure, price: bus.price))),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -133,12 +169,12 @@ class _BusListScreenState extends State<BusListScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(bus['name'] as String, style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w700)),
+                  Text(bus.name, style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w700)),
                   const SizedBox(height: 2),
-                  Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)), child: Text(bus['type'] as String, style: AppTextStyles.label.copyWith(color: AppColors.primary, fontSize: 9))),
+                  Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)), child: Text(bus.type, style: AppTextStyles.label.copyWith(color: AppColors.primary, fontSize: 9))),
                 ]),
                 Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                  Text('Rs ${bus['price']}', style: AppTextStyles.price.copyWith(fontSize: 16)),
+                  Text('Rs ${bus.price}', style: AppTextStyles.price.copyWith(fontSize: 16)),
                   Text('per seat', style: AppTextStyles.bodySmall.copyWith(fontSize: 9)),
                 ]),
               ],
@@ -147,11 +183,11 @@ class _BusListScreenState extends State<BusListScreen> {
             Row(
               children: [
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(bus['departure'] as String, style: AppTextStyles.h3.copyWith(fontSize: 16)),
+                  Text(bus.departure, style: AppTextStyles.h3.copyWith(fontSize: 16)),
                   Text(widget.from, style: AppTextStyles.bodySmall.copyWith(fontSize: 10)),
                 ]),
                 Expanded(child: Column(children: [
-                  Text(bus['duration'] as String, style: AppTextStyles.bodySmall.copyWith(fontSize: 10)),
+                  Text(bus.duration, style: AppTextStyles.bodySmall.copyWith(fontSize: 10)),
                   const SizedBox(height: 4),
                   Row(children: [
                     Container(width: 6, height: 6, decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle)),
@@ -162,7 +198,7 @@ class _BusListScreenState extends State<BusListScreen> {
                   ]),
                 ])),
                 Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                  Text(bus['arrival'] as String, style: AppTextStyles.h3.copyWith(fontSize: 16)),
+                  Text(bus.arrival, style: AppTextStyles.h3.copyWith(fontSize: 16)),
                   Text(widget.to, style: AppTextStyles.bodySmall.copyWith(fontSize: 10)),
                 ]),
               ],
@@ -173,15 +209,15 @@ class _BusListScreenState extends State<BusListScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(color: isLowSeat ? AppColors.orange.withValues(alpha: 0.1) : AppColors.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(8)),
-                  child: Text('${bus['seats']} seats left', style: AppTextStyles.label.copyWith(color: isLowSeat ? AppColors.orange : AppColors.primary, fontSize: 9)),
+                  child: Text('${bus.availableSeats} seats left', style: AppTextStyles.label.copyWith(color: isLowSeat ? AppColors.orange : AppColors.primary, fontSize: 9)),
                 ),
                 const SizedBox(width: 8),
-                ...((bus['amenities'] as List<String>).take(3).map((a) => Container(margin: const EdgeInsets.only(right: 6), padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4), decoration: BoxDecoration(color: AppColors.background, borderRadius: BorderRadius.circular(6)), child: Text(a, style: AppTextStyles.label.copyWith(fontSize: 9))))),
+                ...(bus.amenities.take(3).map((a) => Container(margin: const EdgeInsets.only(right: 6), padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4), decoration: BoxDecoration(color: AppColors.background, borderRadius: BorderRadius.circular(6)), child: Text(a, style: AppTextStyles.label.copyWith(fontSize: 9))))),
                 const Spacer(),
                 Row(children: [
                   const Icon(Icons.star_rounded, size: 14, color: AppColors.orange),
                   const SizedBox(width: 3),
-                  Text('${bus['rating']}', style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.w700, fontSize: 11)),
+                  Text(bus.rating.toStringAsFixed(1), style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.w700, fontSize: 11)),
                 ]),
               ],
             ),

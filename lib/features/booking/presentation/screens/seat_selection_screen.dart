@@ -26,7 +26,6 @@ class SeatSelectionScreen extends StatefulWidget {
 }
 
 class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
-  // Seat statuses: 'available', 'booked', 'women', 'selected'
   final Map<String, String> _seatStatus = {
     '1A': 'available', '1B': 'available', '1C': 'booked',   '1D': 'booked',
     '2A': 'women',     '2B': 'women',     '2C': 'available', '2D': 'available',
@@ -56,8 +55,7 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
               content: Text('You can select max $_maxSeats seats'),
               backgroundColor: AppColors.orange,
               behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
           );
           return;
@@ -114,13 +112,11 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
                           children: [
                             Text(
                               widget.busName,
-                              style: AppTextStyles.h3
-                                  .copyWith(color: AppColors.white),
+                              style: AppTextStyles.h3.copyWith(color: AppColors.white),
                             ),
                             Text(
                               '${widget.from} → ${widget.to}  •  ${widget.departure}',
-                              style: AppTextStyles.bodySmall.copyWith(
-                                  color: AppColors.pale, fontSize: 11),
+                              style: AppTextStyles.bodySmall.copyWith(color: AppColors.pale, fontSize: 11),
                             ),
                           ],
                         ),
@@ -128,7 +124,6 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  // Stepper
                   Row(
                     children: [
                       _stepDone('Search'),
@@ -150,10 +145,8 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Price per seat info
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       decoration: BoxDecoration(
                         color: AppColors.white,
                         borderRadius: BorderRadius.circular(14),
@@ -166,26 +159,22 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.confirmation_number_outlined,
-                              color: AppColors.primary, size: 20),
+                          const Icon(Icons.confirmation_number_outlined, color: AppColors.primary, size: 20),
                           const SizedBox(width: 10),
                           Text(
                             'Rs ${widget.price} per seat',
-                            style: AppTextStyles.bodyMedium
-                                .copyWith(fontWeight: FontWeight.w600),
+                            style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600),
                           ),
                           const Spacer(),
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
                               color: AppColors.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               'Max $_maxSeats seats',
-                              style: AppTextStyles.label.copyWith(
-                                  color: AppColors.primary, fontSize: 9),
+                              style: AppTextStyles.label.copyWith(color: AppColors.primary, fontSize: 9),
                             ),
                           ),
                         ],
@@ -194,12 +183,10 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
 
                     const SizedBox(height: 20),
 
-                    // ── SEAT LEGEND ──
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _legendItem(AppColors.seatAvailable,
-                            AppColors.textLight, 'Available'),
+                        _legendItem(AppColors.seatAvailable, AppColors.textLight, 'Available'),
                         const SizedBox(width: 16),
                         _legendItem(AppColors.seatSelected, null, 'Selected'),
                         const SizedBox(width: 16),
@@ -211,7 +198,6 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
 
                     const SizedBox(height: 20),
 
-                    // ── BUS SEAT MAP ──
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
@@ -227,7 +213,6 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
                       ),
                       child: Column(
                         children: [
-                          // Driver row
                           Container(
                             width: double.infinity,
                             padding: const EdgeInsets.symmetric(vertical: 10),
@@ -235,11 +220,10 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
                               color: AppColors.darkGreen,
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: Row(
+                            child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.directions_bus_rounded,
-                                    color: AppColors.white, size: 16),
+                                Icon(Icons.directions_bus_rounded, color: AppColors.white, size: 16),
                                 SizedBox(width: 8),
                                 Text(
                                   'DRIVER',
@@ -256,71 +240,43 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
 
                           const SizedBox(height: 16),
 
-                          // Column labels
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
                             child: Row(
                               children: [
                                 const SizedBox(width: 32),
-                                Expanded(
-                                    child: Center(
-                                        child: Text('A',
-                                            style: AppTextStyles.label
-                                                .copyWith(fontSize: 10)))),
-                                Expanded(
-                                    child: Center(
-                                        child: Text('B',
-                                            style: AppTextStyles.label
-                                                .copyWith(fontSize: 10)))),
+                                Expanded(child: Center(child: Text('A', style: AppTextStyles.label.copyWith(fontSize: 10)))),
+                                Expanded(child: Center(child: Text('B', style: AppTextStyles.label.copyWith(fontSize: 10)))),
                                 const SizedBox(width: 24),
-                                Expanded(
-                                    child: Center(
-                                        child: Text('C',
-                                            style: AppTextStyles.label
-                                                .copyWith(fontSize: 10)))),
-                                Expanded(
-                                    child: Center(
-                                        child: Text('D',
-                                            style: AppTextStyles.label
-                                                .copyWith(fontSize: 10)))),
+                                Expanded(child: Center(child: Text('C', style: AppTextStyles.label.copyWith(fontSize: 10)))),
+                                Expanded(child: Center(child: Text('D', style: AppTextStyles.label.copyWith(fontSize: 10)))),
                               ],
                             ),
                           ),
 
                           const SizedBox(height: 8),
 
-                          // Seat rows
                           ...List.generate(8, (rowIndex) {
                             final row = rowIndex + 1;
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 8),
                               child: Row(
                                 children: [
-                                  // Row number
                                   SizedBox(
                                     width: 32,
                                     child: Text(
                                       '$row',
-                                      style: AppTextStyles.label
-                                          .copyWith(fontSize: 10),
+                                      style: AppTextStyles.label.copyWith(fontSize: 10),
                                       textAlign: TextAlign.center,
                                     ),
                                   ),
-                                  // Left seats (A, B)
-                                  Expanded(
-                                      child: _seatWidget('${row}A')),
+                                  Expanded(child: _seatWidget('${row}A')),
                                   const SizedBox(width: 4),
-                                  Expanded(
-                                      child: _seatWidget('${row}B')),
-                                  // Aisle
+                                  Expanded(child: _seatWidget('${row}B')),
                                   const SizedBox(width: 24),
-                                  // Right seats (C, D)
-                                  Expanded(
-                                      child: _seatWidget('${row}C')),
+                                  Expanded(child: _seatWidget('${row}C')),
                                   const SizedBox(width: 4),
-                                  Expanded(
-                                      child: _seatWidget('${row}D')),
+                                  Expanded(child: _seatWidget('${row}D')),
                                 ],
                               ),
                             );
@@ -329,7 +285,7 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 100), // space for bottom bar
+                    const SizedBox(height: 100),
                   ],
                 ),
               ),
@@ -338,7 +294,6 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
         ),
       ),
 
-      // ── BOTTOM BAR ──
       bottomNavigationBar: Container(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
         decoration: BoxDecoration(
@@ -353,15 +308,12 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
         ),
         child: Row(
           children: [
-            // Selected seat count + total
             Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _selectedSeats.isEmpty
-                      ? 'No seat selected'
-                      : _selectedSeats.join(', '),
+                  _selectedSeats.isEmpty ? 'No seat selected' : _selectedSeats.join(', '),
                   style: AppTextStyles.bodySmall.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.textDark,
@@ -369,54 +321,49 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
                   ),
                 ),
                 Text(
-                  _selectedSeats.isEmpty
-                      ? 'Select at least 1 seat'
-                      : 'Total: Rs $_totalPrice',
+                  _selectedSeats.isEmpty ? 'Select at least 1 seat' : 'Total: Rs $_totalPrice',
                   style: AppTextStyles.price.copyWith(fontSize: 18),
                 ),
               ],
             ),
             const Spacer(),
-            // Proceed button
-            SizedBox(
-              height: 52,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _selectedSeats.isEmpty
-                      ? AppColors.textLight
-                      : AppColors.primary,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                ),
-                onPressed: _selectedSeats.isEmpty
-                    ? null
-                    : () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => PassengerDetailsScreen(
-                              busName: widget.busName,
-                              from: widget.from,
-                              to: widget.to,
-                              departure: widget.departure,
-                              selectedSeats: List.from(_selectedSeats),
-                              pricePerSeat: widget.price,
-                              totalPrice: _totalPrice,
+            // FIX: wrapped in Flexible so the Row gives this a bounded width
+            // instead of Infinity (this was the cause of the white-screen crash)
+            Flexible(
+              child: SizedBox(
+                height: 52,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _selectedSeats.isEmpty ? AppColors.textLight : AppColors.primary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                  ),
+                  onPressed: _selectedSeats.isEmpty
+                      ? null
+                      : () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => PassengerDetailsScreen(
+                                busId: widget.busId,
+                                busName: widget.busName,
+                                from: widget.from,
+                                to: widget.to,
+                                departure: widget.departure,
+                                selectedSeats: List.from(_selectedSeats),
+                                pricePerSeat: widget.price,
+                                totalPrice: _totalPrice,
+                              ),
                             ),
                           ),
-                        ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Continue',
-                      style: AppTextStyles.buttonText,
-                    ),
-                    const SizedBox(width: 6),
-                    const Icon(Icons.arrow_forward_rounded,
-                        color: AppColors.white, size: 16),
-                  ],
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('Continue', style: AppTextStyles.buttonText),
+                      const SizedBox(width: 6),
+                      const Icon(Icons.arrow_forward_rounded, color: AppColors.white, size: 16),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -499,16 +446,11 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(4),
-            border: Border.all(
-              color: borderColor ?? color.withValues(alpha: 0.5),
-              width: 1,
-            ),
+            border: Border.all(color: borderColor ?? color.withValues(alpha: 0.5), width: 1),
           ),
         ),
         const SizedBox(width: 5),
-        Text(label,
-            style: AppTextStyles.bodySmall.copyWith(
-                fontSize: 10, color: AppColors.textGrey)),
+        Text(label, style: AppTextStyles.bodySmall.copyWith(fontSize: 10, color: AppColors.textGrey)),
       ],
     );
   }
@@ -518,15 +460,11 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
           Container(
             width: 26,
             height: 26,
-            decoration: const BoxDecoration(
-                color: AppColors.white, shape: BoxShape.circle),
-            child: const Icon(Icons.check_rounded,
-                color: AppColors.primary, size: 14),
+            decoration: const BoxDecoration(color: AppColors.white, shape: BoxShape.circle),
+            child: const Icon(Icons.check_rounded, color: AppColors.primary, size: 14),
           ),
           const SizedBox(height: 4),
-          Text(label,
-              style: AppTextStyles.label.copyWith(
-                  color: AppColors.white.withValues(alpha: 0.7), fontSize: 9)),
+          Text(label, style: AppTextStyles.label.copyWith(color: AppColors.white.withValues(alpha: 0.7), fontSize: 9)),
         ],
       );
 
@@ -535,18 +473,13 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
           Container(
             width: 26,
             height: 26,
-            decoration: const BoxDecoration(
-                color: AppColors.orange, shape: BoxShape.circle),
+            decoration: const BoxDecoration(color: AppColors.orange, shape: BoxShape.circle),
             child: Center(
-              child: Text(num,
-                  style: AppTextStyles.label
-                      .copyWith(color: AppColors.white, fontSize: 11)),
+              child: Text(num, style: AppTextStyles.label.copyWith(color: AppColors.white, fontSize: 11)),
             ),
           ),
           const SizedBox(height: 4),
-          Text(label,
-              style: AppTextStyles.label
-                  .copyWith(color: AppColors.white, fontSize: 9)),
+          Text(label, style: AppTextStyles.label.copyWith(color: AppColors.white, fontSize: 9)),
         ],
       );
 
@@ -558,19 +491,14 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
             decoration: BoxDecoration(
               color: AppColors.white.withValues(alpha: 0.15),
               shape: BoxShape.circle,
-              border: Border.all(
-                  color: AppColors.white.withValues(alpha: 0.3), width: 1.5),
+              border: Border.all(color: AppColors.white.withValues(alpha: 0.3), width: 1.5),
             ),
             child: Center(
-              child: Text(num,
-                  style: AppTextStyles.label.copyWith(
-                      color: AppColors.white.withValues(alpha: 0.6), fontSize: 11)),
+              child: Text(num, style: AppTextStyles.label.copyWith(color: AppColors.white.withValues(alpha: 0.6), fontSize: 11)),
             ),
           ),
           const SizedBox(height: 4),
-          Text(label,
-              style: AppTextStyles.label.copyWith(
-                  color: AppColors.white.withValues(alpha: 0.4), fontSize: 9)),
+          Text(label, style: AppTextStyles.label.copyWith(color: AppColors.white.withValues(alpha: 0.4), fontSize: 9)),
         ],
       );
 
@@ -578,9 +506,7 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
         child: Container(
           height: 2,
           margin: const EdgeInsets.only(bottom: 20),
-          color: done
-              ? AppColors.white.withValues(alpha: 0.8)
-              : AppColors.white.withValues(alpha: 0.25),
+          color: done ? AppColors.white.withValues(alpha: 0.8) : AppColors.white.withValues(alpha: 0.25),
         ),
       );
 }
